@@ -278,6 +278,33 @@ END FUNCTION ftg_get_bounds
 !=============================================================================
 !=============================================================================
 
+SUBROUTINE ftg_register_only(fieldname, field, typename)
+  CHARACTER(LEN=*), INTENT(IN)           :: fieldname
+  CLASS(*), INTENT(IN), TARGET           :: field
+  CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: typename
+
+  CLASS(*), POINTER :: padd
+  LOGICAL           :: bullshit
+  CHARACTER(16)     :: loc
+
+  padd => field
+  bullshit = .FALSE.
+  IF (ignore_bullshit) THEN
+    bullshit = .NOT. ASSOCIATED(padd, field)
+  END IF
+
+  IF (.NOT. bullshit) THEN
+    CALL fs_check_size(serializer, fieldname, typename, 0, 1, 0, 0, 0)
+    WRITE (loc,'(Z16)') C_LOC(field)
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'type', TRIM(typename))
+  END IF
+
+END SUBROUTINE ftg_register_only
+
+!=============================================================================
+!=============================================================================
+
 SUBROUTINE ftg_write_logical_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)   :: fieldname
   LOGICAL, INTENT(IN), TARGET    :: field
