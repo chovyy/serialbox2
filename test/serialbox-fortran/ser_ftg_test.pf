@@ -721,4 +721,39 @@ CONTAINS
     
     END SUBROUTINE testRegisterOnly    
     
+@Test
+    SUBROUTINE testZeroSize()  
+    
+    CHARACTER(len=*), PARAMETER :: base_name = 'testZeroSize'
+    
+    INTEGER :: int1(0), int2(2,0), int3(2:4,3:6,1:0), int4(2:4,3:6,4:8,5:0)
+    
+    CALL ftg_set_serializer(dir, base_name, 'w')
+    CALL ftg_write("int1", int1, LBOUND(int1), UBOUND(int1))
+    CALL ftg_write("int2", int2, LBOUND(int2), UBOUND(int2))
+    CALL ftg_write("int3", int3, LBOUND(int3), UBOUND(int3))
+    CALL ftg_write("int4", int4, LBOUND(int4), UBOUND(int4))
+    CALL ftg_destroy_serializer()
+    
+    CALL ftg_set_serializer(dir, base_name, 'r')
+    @assertTrue(ftg_field_exists("int1"))
+    @assertTrue(ftg_field_exists("int2"))
+    @assertTrue(ftg_field_exists("int3"))
+    @assertTrue(ftg_field_exists("int4"))
+    @assertEqual(exp_size(SHAPE(int1)), fs_get_size(ftg_get_serializer(), "int1"))
+    @assertEqual(exp_size(SHAPE(int2)), fs_get_size(ftg_get_serializer(), "int2"))
+    @assertEqual(exp_size(SHAPE(int3)), fs_get_size(ftg_get_serializer(), "int3"))
+    @assertEqual(exp_size(SHAPE(int4)), fs_get_size(ftg_get_serializer(), "int4"))
+    @assertEqual((/ 1,  0,  0,  0, 0, 0,  0, 0 /), ftg_get_bounds("int1"))
+    @assertEqual((/ 1,  2,  1,  0, 0, 0,  0, 0 /), ftg_get_bounds("int2"))
+    @assertEqual((/ 2,  4,  3,  6, 1, 0,  0, 0 /), ftg_get_bounds("int3"))
+    @assertEqual((/ 2,  4,  3,  6, 4, 8,  1, 0 /), ftg_get_bounds("int4"))
+    CALL ftg_read("int1", int1)
+    CALL ftg_read("int2", int2)
+    CALL ftg_read("int3", int3)
+    CALL ftg_read("int4", int4)
+    CALL ftg_destroy_serializer()
+    
+    END SUBROUTINE testZeroSize    
+    
 END MODULE ser_ftg_test
