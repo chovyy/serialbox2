@@ -205,8 +205,6 @@ LOGICAL :: ignore_not_existing = .TRUE.
 TYPE(t_serializer), POINTER :: serializer => NULL()
 TYPE(t_savepoint),  POINTER :: savepoint  => NULL()
 
-LOGICAL :: serializer_has_written = .FALSE., serializer_has_registered = .FALSE.
-
 CONTAINS
 
 !=============================================================================
@@ -223,8 +221,6 @@ SUBROUTINE ftg_set_serializer_create(directory, prefix, mode, opt_archive)
   ALLOCATE(new_serializer)
   CALL fs_create_serializer(directory, prefix, mode, new_serializer, opt_archive)
   serializer => new_serializer
-  serializer_has_written = .FALSE.
-  serializer_has_registered = .FALSE.
 
 END SUBROUTINE ftg_set_serializer_create
 
@@ -234,8 +230,6 @@ SUBROUTINE ftg_set_serializer_existing(new_serializer)
   TYPE(t_serializer), INTENT(IN), TARGET :: new_serializer
 
   serializer => new_serializer
-  serializer_has_written = .FALSE.
-  serializer_has_registered = .FALSE.
 
 END SUBROUTINE ftg_set_serializer_existing
 
@@ -243,10 +237,6 @@ END SUBROUTINE ftg_set_serializer_existing
 SUBROUTINE ftg_destroy_serializer()
 
   IF (ASSOCIATED(serializer)) THEN
-    IF (serializer_has_registered .AND. .NOT. serializer_has_written) THEN
-      CALL ftg_write('ftg_dummy_var', .TRUE.)
-    END IF
-
     CALL fs_destroy_serializer(serializer)
     serializer => NULL()
   END IF
@@ -457,7 +447,6 @@ SUBROUTINE ftg_register_only(fieldname, typename, lbounds, ubounds, cptr)
     IF (PRESENT(cptr)) THEN
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:loc', TRIM(ftg_loc_hex(cptr)))
     END IF
-    serializer_has_registered = .TRUE.
   END IF
 
 END SUBROUTINE ftg_register_only
@@ -481,7 +470,6 @@ SUBROUTINE ftg_register_only_internal(fieldname, data_type, bytes_per_element, l
   CALL fs_register_field(serializer, fieldname, data_type, bytes_per_element, sizes(1), sizes(2), sizes(3), sizes(4), &
                          bounds(1), bounds(2), bounds(3), bounds(4), bounds(5), bounds(6), bounds(7), bounds(8))
   CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .TRUE.)
-  serializer_has_registered = .TRUE.
 
 END SUBROUTINE ftg_register_only_internal
 
@@ -534,7 +522,6 @@ SUBROUTINE ftg_write_logical_0d(fieldname, field)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
-    serializer_has_written = .TRUE.
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
   END IF
@@ -561,7 +548,6 @@ SUBROUTINE ftg_write_logical_1d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'bool', fs_boolsize(), lbounds, ubounds)
@@ -593,7 +579,6 @@ SUBROUTINE ftg_write_logical_2d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'bool', fs_boolsize(), lbounds, ubounds)
@@ -627,7 +612,6 @@ SUBROUTINE ftg_write_logical_3d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'bool', fs_boolsize(), lbounds, ubounds)
@@ -661,7 +645,6 @@ SUBROUTINE ftg_write_logical_4d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'bool', fs_boolsize(), lbounds, ubounds)
@@ -689,7 +672,6 @@ SUBROUTINE ftg_write_bool_0d(fieldname, field)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
-    serializer_has_written = .TRUE.
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
   END IF
@@ -716,7 +698,6 @@ SUBROUTINE ftg_write_bool_1d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'bool', fs_boolsize(), lbounds, ubounds)
@@ -748,7 +729,6 @@ SUBROUTINE ftg_write_bool_2d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'bool', fs_boolsize(), lbounds, ubounds)
@@ -781,7 +761,6 @@ SUBROUTINE ftg_write_bool_3d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'bool', fs_boolsize(), lbounds, ubounds)
@@ -815,7 +794,6 @@ SUBROUTINE ftg_write_bool_4d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'bool', fs_boolsize(), lbounds, ubounds)
@@ -843,7 +821,6 @@ SUBROUTINE ftg_write_int_0d(fieldname, field)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
-    serializer_has_written = .TRUE.
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
   END IF
@@ -870,7 +847,6 @@ SUBROUTINE ftg_write_int_1d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'int', fs_intsize(), lbounds, ubounds)
@@ -902,7 +878,6 @@ SUBROUTINE ftg_write_int_2d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'int', fs_intsize(), lbounds, ubounds)
@@ -935,7 +910,6 @@ SUBROUTINE ftg_write_int_3d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'int', fs_intsize(), lbounds, ubounds)
@@ -969,7 +943,6 @@ SUBROUTINE ftg_write_int_4d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'int', fs_intsize(), lbounds, ubounds)
@@ -997,7 +970,6 @@ SUBROUTINE ftg_write_long_0d(fieldname, field)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
-    serializer_has_written = .TRUE.
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
   END IF
@@ -1024,7 +996,6 @@ SUBROUTINE ftg_write_long_1d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'long', fs_longsize(), lbounds, ubounds)
@@ -1056,7 +1027,6 @@ SUBROUTINE ftg_write_long_2d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'long', fs_longsize(), lbounds, ubounds)
@@ -1089,7 +1059,6 @@ SUBROUTINE ftg_write_long_3d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'long', fs_longsize(), lbounds, ubounds)
@@ -1123,7 +1092,6 @@ SUBROUTINE ftg_write_long_4d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'long', fs_longsize(), lbounds, ubounds)
@@ -1152,7 +1120,6 @@ SUBROUTINE ftg_write_float_0d(fieldname, field)
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
-    serializer_has_written = .TRUE.
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
   END IF
 
@@ -1178,7 +1145,6 @@ SUBROUTINE ftg_write_float_1d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'float', fs_floatsize(), lbounds, ubounds)
@@ -1210,7 +1176,6 @@ SUBROUTINE ftg_write_float_2d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'float', fs_floatsize(), lbounds, ubounds)
@@ -1243,7 +1208,6 @@ SUBROUTINE ftg_write_float_3d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'float', fs_floatsize(), lbounds, ubounds)
@@ -1277,7 +1241,6 @@ SUBROUTINE ftg_write_float_4d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'float', fs_floatsize(), lbounds, ubounds)
@@ -1305,7 +1268,6 @@ SUBROUTINE ftg_write_double_0d(fieldname, field)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
-    serializer_has_written = .TRUE.
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
   END IF
@@ -1332,7 +1294,6 @@ SUBROUTINE ftg_write_double_1d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'double', fs_doublesize(), lbounds, ubounds)
@@ -1364,7 +1325,6 @@ SUBROUTINE ftg_write_double_2d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'double', fs_doublesize(), lbounds, ubounds)
@@ -1397,7 +1357,6 @@ SUBROUTINE ftg_write_double_3d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'double', fs_doublesize(), lbounds, ubounds)
@@ -1431,7 +1390,6 @@ SUBROUTINE ftg_write_double_4d(fieldname, field, lbounds, ubounds)
   IF (.NOT. bullshit) THEN
     IF (SIZE(field) > 0) THEN
       CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-      serializer_has_written = .TRUE.
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
     ELSE
       CALL ftg_register_only_internal(fieldname, 'double', fs_doublesize(), lbounds, ubounds)
