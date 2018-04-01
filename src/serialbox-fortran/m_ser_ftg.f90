@@ -212,8 +212,8 @@ CONTAINS
 
 SUBROUTINE ftg_set_serializer_create(directory, prefix, mode, opt_archive)
 
-  CHARACTER(LEN=*), INTENT(IN)    :: directory, prefix
-  CHARACTER, INTENT(IN)           :: mode
+  CHARACTER(LEN=*), INTENT(IN)           :: directory, prefix
+  CHARACTER, INTENT(IN)                  :: mode
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: opt_archive
 
   TYPE(t_serializer), POINTER :: new_serializer
@@ -312,7 +312,7 @@ END FUNCTION ftg_get_savepoint
 
 LOGICAL FUNCTION ftg_field_exists(fieldname)
 
-  CHARACTER(LEN=*), INTENT(IN)   :: fieldname
+  CHARACTER(LEN=*), INTENT(IN) :: fieldname
 
   ftg_field_exists = fs_field_exists(serializer,  fieldname)
 
@@ -323,8 +323,8 @@ END FUNCTION ftg_field_exists
 
 FUNCTION ftg_get_bounds(fieldname)
 
-  CHARACTER(LEN=*), INTENT(IN)   :: fieldname
-  INTEGER, DIMENSION(8) :: ftg_get_bounds
+  CHARACTER(LEN=*), INTENT(IN) :: fieldname
+  INTEGER, DIMENSION(8)        :: ftg_get_bounds
 
   ftg_get_bounds = fs_get_halos(serializer,  fieldname)
 
@@ -341,28 +341,28 @@ END SUBROUTINE ftg_add_serializer_metainfo_b
 
 
 SUBROUTINE ftg_add_serializer_metainfo_i(key, val)
-  CHARACTER(LEN=*)               :: key
-  INTEGER(C_INT)                 :: val
+  CHARACTER(LEN=*) :: key
+  INTEGER(C_INT)   :: val
   CALL fs_add_serializer_metainfo(serializer, key, val)
 END SUBROUTINE ftg_add_serializer_metainfo_i
 
 
 SUBROUTINE ftg_add_serializer_metainfo_f(key, val)
-  CHARACTER(LEN=*)               :: key
-  REAL(KIND=C_FLOAT)             :: val
+  CHARACTER(LEN=*)   :: key
+  REAL(KIND=C_FLOAT) :: val
   CALL fs_add_serializer_metainfo(serializer, key, val)
 END SUBROUTINE ftg_add_serializer_metainfo_f
 
 
 SUBROUTINE ftg_add_serializer_metainfo_d(key, val)
-  CHARACTER(LEN=*)               :: key
-  REAL(KIND=C_DOUBLE)            :: val
+  CHARACTER(LEN=*)    :: key
+  REAL(KIND=C_DOUBLE) :: val
   CALL fs_add_serializer_metainfo(serializer, key, val)
 END SUBROUTINE ftg_add_serializer_metainfo_d
 
 
 SUBROUTINE ftg_add_serializer_metainfo_s(key, val)
-  CHARACTER(LEN=*)               :: key, val
+  CHARACTER(LEN=*) :: key, val
   CALL fs_add_serializer_metainfo(serializer, key, val)
 END SUBROUTINE ftg_add_serializer_metainfo_s
 
@@ -377,28 +377,28 @@ END SUBROUTINE ftg_add_savepoint_metainfo_b
 
 
 SUBROUTINE ftg_add_savepoint_metainfo_i(key, val)
-  CHARACTER(LEN=*)               :: key
-  INTEGER(C_INT)                 :: val
+  CHARACTER(LEN=*) :: key
+  INTEGER(C_INT)   :: val
   CALL fs_add_savepoint_metainfo(savepoint, key, val)
 END SUBROUTINE ftg_add_savepoint_metainfo_i
 
 
 SUBROUTINE ftg_add_savepoint_metainfo_f(key, val)
-  CHARACTER(LEN=*)               :: key
-  REAL(KIND=C_FLOAT)             :: val
+  CHARACTER(LEN=*)   :: key
+  REAL(KIND=C_FLOAT) :: val
   CALL fs_add_savepoint_metainfo(savepoint, key, val)
 END SUBROUTINE ftg_add_savepoint_metainfo_f
 
 
 SUBROUTINE ftg_add_savepoint_metainfo_d(key, val)
-  CHARACTER(LEN=*)               :: key
-  REAL(KIND=C_DOUBLE)            :: val
+  CHARACTER(LEN=*)    :: key
+  REAL(KIND=C_DOUBLE) :: val
   CALL fs_add_savepoint_metainfo(savepoint, key, val)
 END SUBROUTINE ftg_add_savepoint_metainfo_d
 
 
 SUBROUTINE ftg_add_savepoint_metainfo_s(key, val)
-  CHARACTER(LEN=*)               :: key, val
+  CHARACTER(LEN=*) :: key, val
   CALL fs_add_savepoint_metainfo(savepoint, key, val)
 END SUBROUTINE ftg_add_savepoint_metainfo_s
 
@@ -456,7 +456,7 @@ SUBROUTINE ftg_register_only_internal(fieldname, data_type, bytes_per_element, l
   CHARACTER(LEN=*), INTENT(IN) :: data_type
   INTEGER, INTENT(IN)          :: bytes_per_element, lbounds(:), ubounds(:)
 
-  INTEGER       :: sizes(4), bounds(8), i
+  INTEGER :: sizes(4), bounds(8), i
 
   sizes  = (/ 1, 0, 0, 0 /)
   bounds = (/ 0, 0, 0, 0, 0, 0, 0, 0 /)
@@ -478,15 +478,15 @@ END SUBROUTINE ftg_register_only_internal
 
 FUNCTION ftg_loc(field)
 
-  TYPE(C_PTR), INTENT(in) :: field
+  TYPE(C_PTR), INTENT(in)  :: field
   INTEGER(KIND=C_INTPTR_T) :: ftg_loc
 
   INTERFACE
      SUBROUTINE ftg_loc_(field, loc) &
           BIND(c, name='serialboxFortranLoc')
-       USE, INTRINSIC :: iso_c_binding
-       TYPE(C_PTR), INTENT(IN), VALUE :: field
-       INTEGER(C_INTPTR_T), INTENT(OUT)   :: loc
+       USE, INTRINSIC                   :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE   :: field
+       INTEGER(C_INTPTR_T), INTENT(OUT) :: loc
      END SUBROUTINE ftg_loc_
   END INTERFACE
 
@@ -497,7 +497,7 @@ END FUNCTION ftg_loc
 FUNCTION ftg_loc_hex(field)
 
   TYPE(C_PTR), INTENT(in) :: field
-  CHARACTER(16) :: ftg_loc_hex
+  CHARACTER(16)           :: ftg_loc_hex
 
   WRITE (ftg_loc_hex,'(Z16)') ftg_loc(field)
 
@@ -505,7 +505,6 @@ END FUNCTION ftg_loc_hex
 
 !=============================================================================
 !=============================================================================
-
 
 SUBROUTINE ftg_write_logical_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
@@ -654,9 +653,6 @@ SUBROUTINE ftg_write_logical_4d(fieldname, field, lbounds, ubounds)
 
 END SUBROUTINE ftg_write_logical_4d
 
-!=============================================================================
-!=============================================================================
-
 SUBROUTINE ftg_write_bool_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field
@@ -745,6 +741,7 @@ SUBROUTINE ftg_write_bool_3d(fieldname, field, lbounds, ubounds)
 
   LOGICAL(KIND=C_BOOL), POINTER :: padd(:,:,:)
   LOGICAL                       :: bullshit
+  CHARACTER(16)                 :: loc
 
   padd=>field
   bullshit = .FALSE.
@@ -802,9 +799,6 @@ SUBROUTINE ftg_write_bool_4d(fieldname, field, lbounds, ubounds)
   END IF
 
 END SUBROUTINE ftg_write_bool_4d
-
-!=============================================================================
-!=============================================================================
 
 SUBROUTINE ftg_write_int_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
@@ -894,6 +888,7 @@ SUBROUTINE ftg_write_int_3d(fieldname, field, lbounds, ubounds)
 
   INTEGER, POINTER :: padd(:,:,:)
   LOGICAL          :: bullshit
+  CHARACTER(16)    :: loc
 
   padd=>field
   bullshit = .FALSE.
@@ -951,9 +946,6 @@ SUBROUTINE ftg_write_int_4d(fieldname, field, lbounds, ubounds)
   END IF
 
 END SUBROUTINE ftg_write_int_4d
-
-!=============================================================================
-!=============================================================================
 
 SUBROUTINE ftg_write_long_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
@@ -1043,6 +1035,7 @@ SUBROUTINE ftg_write_long_3d(fieldname, field, lbounds, ubounds)
 
   INTEGER(KIND=C_LONG), POINTER :: padd(:,:,:)
   LOGICAL                       :: bullshit
+  CHARACTER(16)                 :: loc
 
   padd=>field
   bullshit = .FALSE.
@@ -1101,9 +1094,6 @@ SUBROUTINE ftg_write_long_4d(fieldname, field, lbounds, ubounds)
 
 END SUBROUTINE ftg_write_long_4d
 
-!=============================================================================
-!=============================================================================
-
 SUBROUTINE ftg_write_float_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN), TARGET :: field
@@ -1119,8 +1109,8 @@ SUBROUTINE ftg_write_float_0d(fieldname, field)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:registered_only', .FALSE.)
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'ftg:loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
   END IF
 
 END SUBROUTINE ftg_write_float_0d
@@ -1192,6 +1182,7 @@ SUBROUTINE ftg_write_float_3d(fieldname, field, lbounds, ubounds)
 
   REAL(KIND=C_FLOAT), POINTER :: padd(:,:,:)
   LOGICAL                     :: bullshit
+  CHARACTER(16)               :: loc
 
   padd=>field
   bullshit = .FALSE.
@@ -1250,9 +1241,6 @@ SUBROUTINE ftg_write_float_4d(fieldname, field, lbounds, ubounds)
 
 END SUBROUTINE ftg_write_float_4d
 
-!=============================================================================
-!=============================================================================
-
 SUBROUTINE ftg_write_double_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN), TARGET :: field
@@ -1277,7 +1265,7 @@ END SUBROUTINE ftg_write_double_0d
 SUBROUTINE ftg_write_double_1d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN), TARGET :: field(:)
-  INTEGER, DIMENSION(1), INTENT(IN)       :: lbounds, ubounds
+  INTEGER, INTENT(IN)                     :: lbounds(1), ubounds(1)
 
   REAL(KIND=C_DOUBLE), POINTER :: padd(:)
   LOGICAL                      :: bullshit
@@ -1306,7 +1294,7 @@ END SUBROUTINE ftg_write_double_1d
 SUBROUTINE ftg_write_double_2d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN), TARGET :: field(:,:)
-  INTEGER, DIMENSION(2), INTENT(IN)       :: lbounds, ubounds
+  INTEGER, INTENT(IN)                     :: lbounds(2), ubounds(2)
 
   REAL(KIND=C_DOUBLE), POINTER :: padd(:,:)
   LOGICAL                      :: bullshit
@@ -1337,10 +1325,11 @@ END SUBROUTINE ftg_write_double_2d
 SUBROUTINE ftg_write_double_3d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN), TARGET :: field(:,:,:)
-  INTEGER, DIMENSION(3), INTENT(IN)       :: lbounds, ubounds
+  INTEGER, INTENT(IN)                     :: lbounds(3), ubounds(3)
 
   REAL(KIND=C_DOUBLE), POINTER :: padd(:,:,:)
   LOGICAL                      :: bullshit
+  CHARACTER(16)                :: loc
 
   padd=>field
   bullshit = .FALSE.
@@ -1369,7 +1358,7 @@ END SUBROUTINE ftg_write_double_3d
 SUBROUTINE ftg_write_double_4d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN), TARGET :: field(:,:,:,:)
-  INTEGER, DIMENSION(4), INTENT(IN)       :: lbounds, ubounds
+  INTEGER, INTENT(IN)                     :: lbounds(4), ubounds(4)
 
   REAL(KIND=C_DOUBLE), POINTER :: padd(:,:,:,:)
   LOGICAL                      :: bullshit
@@ -1405,7 +1394,7 @@ END SUBROUTINE ftg_write_double_4d
 SUBROUTINE ftg_read_logical_0d(fieldname, field)
   CHARACTER(LEN=*)             :: fieldname
   LOGICAL, INTENT(OUT), TARGET :: field
-  LOGICAL :: registered_only
+  LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1418,7 +1407,7 @@ END SUBROUTINE ftg_read_logical_0d
 SUBROUTINE ftg_read_logical_1d(fieldname, field)
   CHARACTER(LEN=*)             :: fieldname
   LOGICAL, INTENT(OUT), TARGET :: field(:)
-  LOGICAL :: registered_only
+  LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1431,7 +1420,7 @@ END SUBROUTINE ftg_read_logical_1d
 SUBROUTINE ftg_read_logical_2d(fieldname, field)
   CHARACTER(LEN=*)             :: fieldname
   LOGICAL, INTENT(OUT), TARGET :: field(:,:)
-  LOGICAL :: registered_only
+  LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1444,7 +1433,7 @@ END SUBROUTINE ftg_read_logical_2d
 SUBROUTINE ftg_read_logical_3d(fieldname, field)
   CHARACTER(LEN=*)             :: fieldname
   LOGICAL, INTENT(OUT), TARGET :: field(:,:,:)
-  LOGICAL :: registered_only
+  LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1457,7 +1446,7 @@ END SUBROUTINE ftg_read_logical_3d
 SUBROUTINE ftg_read_logical_4d(fieldname, field)
   CHARACTER(LEN=*)             :: fieldname
   LOGICAL, INTENT(OUT), TARGET :: field(:,:,:,:)
-  LOGICAL :: registered_only
+  LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1467,13 +1456,10 @@ SUBROUTINE ftg_read_logical_4d(fieldname, field)
   END IF
 END SUBROUTINE ftg_read_logical_4d
 
-!=============================================================================
-!=============================================================================
-
 SUBROUTINE ftg_read_bool_0d(fieldname, field)
   CHARACTER(LEN=*)                          :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field
-  LOGICAL :: registered_only
+  LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1486,7 +1472,7 @@ END SUBROUTINE ftg_read_bool_0d
 SUBROUTINE ftg_read_bool_1d(fieldname, field)
   CHARACTER(LEN=*)                          :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:)
-  LOGICAL :: registered_only
+  LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1499,7 +1485,7 @@ END SUBROUTINE ftg_read_bool_1d
 SUBROUTINE ftg_read_bool_2d(fieldname, field)
   CHARACTER(LEN=*)                          :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:,:)
-  LOGICAL :: registered_only
+  LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1512,7 +1498,7 @@ END SUBROUTINE ftg_read_bool_2d
 SUBROUTINE ftg_read_bool_3d(fieldname, field)
   CHARACTER(LEN=*)                          :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:,:,:)
-  LOGICAL :: registered_only
+  LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1525,7 +1511,7 @@ END SUBROUTINE ftg_read_bool_3d
 SUBROUTINE ftg_read_bool_4d(fieldname, field)
   CHARACTER(LEN=*)                          :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:,:,:,:)
-  LOGICAL :: registered_only
+  LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1535,13 +1521,10 @@ SUBROUTINE ftg_read_bool_4d(fieldname, field)
   END IF
 END SUBROUTINE ftg_read_bool_4d
 
-!=============================================================================
-!=============================================================================
-
 SUBROUTINE ftg_read_int_0d(fieldname, field)
   CHARACTER(LEN=*)             :: fieldname
   INTEGER, INTENT(OUT), TARGET :: field
-  LOGICAL :: registered_only
+  LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1554,7 +1537,7 @@ END SUBROUTINE ftg_read_int_0d
 SUBROUTINE ftg_read_int_1d(fieldname, field)
   CHARACTER(LEN=*)             :: fieldname
   INTEGER, INTENT(OUT), TARGET :: field(:)
-  LOGICAL :: registered_only
+  LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1567,7 +1550,7 @@ END SUBROUTINE ftg_read_int_1d
 SUBROUTINE ftg_read_int_2d(fieldname, field)
   CHARACTER(LEN=*)             :: fieldname
   INTEGER, INTENT(OUT), TARGET :: field(:,:)
-  LOGICAL :: registered_only
+  LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1580,7 +1563,7 @@ END SUBROUTINE ftg_read_int_2d
 SUBROUTINE ftg_read_int_3d(fieldname, field)
   CHARACTER(LEN=*)             :: fieldname
   INTEGER, INTENT(OUT), TARGET :: field(:,:,:)
-  LOGICAL :: registered_only
+  LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1593,7 +1576,7 @@ END SUBROUTINE ftg_read_int_3d
 SUBROUTINE ftg_read_int_4d(fieldname, field)
   CHARACTER(LEN=*)             :: fieldname
   INTEGER, INTENT(OUT), TARGET :: field(:,:,:,:)
-  LOGICAL :: registered_only
+  LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1603,13 +1586,10 @@ SUBROUTINE ftg_read_int_4d(fieldname, field)
   END IF
 END SUBROUTINE ftg_read_int_4d
 
-!=============================================================================
-!=============================================================================
-
 SUBROUTINE ftg_read_long_0d(fieldname, field)
   CHARACTER(LEN=*)                          :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field
-  LOGICAL :: registered_only
+  LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1622,7 +1602,7 @@ END SUBROUTINE ftg_read_long_0d
 SUBROUTINE ftg_read_long_1d(fieldname, field)
   CHARACTER(LEN=*)                          :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field(:)
-  LOGICAL :: registered_only
+  LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1635,7 +1615,7 @@ END SUBROUTINE ftg_read_long_1d
 SUBROUTINE ftg_read_long_2d(fieldname, field)
   CHARACTER(LEN=*)                          :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field(:,:)
-  LOGICAL :: registered_only
+  LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1648,7 +1628,7 @@ END SUBROUTINE ftg_read_long_2d
 SUBROUTINE ftg_read_long_3d(fieldname, field)
   CHARACTER(LEN=*)                          :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field(:,:,:)
-  LOGICAL :: registered_only
+  LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1661,7 +1641,7 @@ END SUBROUTINE ftg_read_long_3d
 SUBROUTINE ftg_read_long_4d(fieldname, field)
   CHARACTER(LEN=*)                          :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field(:,:,:,:)
-  LOGICAL :: registered_only
+  LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1671,13 +1651,10 @@ SUBROUTINE ftg_read_long_4d(fieldname, field)
   END IF
 END SUBROUTINE ftg_read_long_4d
 
-!=============================================================================
-!=============================================================================
-
 SUBROUTINE ftg_read_float_0d(fieldname, field)
   CHARACTER(LEN=*)                        :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), TARGET :: field
-  LOGICAL :: registered_only
+  LOGICAL                                 :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1690,7 +1667,7 @@ END SUBROUTINE ftg_read_float_0d
 SUBROUTINE ftg_read_float_1d(fieldname, field)
   CHARACTER(LEN=*)                        :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), TARGET :: field(:)
-  LOGICAL :: registered_only
+  LOGICAL                                 :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1703,7 +1680,7 @@ END SUBROUTINE ftg_read_float_1d
 SUBROUTINE ftg_read_float_2d(fieldname, field)
   CHARACTER(LEN=*)                        :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), TARGET :: field(:,:)
-  LOGICAL :: registered_only
+  LOGICAL                                 :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1716,7 +1693,7 @@ END SUBROUTINE ftg_read_float_2d
 SUBROUTINE ftg_read_float_3d(fieldname, field)
   CHARACTER(LEN=*)                        :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), TARGET :: field(:,:,:)
-  LOGICAL :: registered_only
+  LOGICAL                                 :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1729,7 +1706,7 @@ END SUBROUTINE ftg_read_float_3d
 SUBROUTINE ftg_read_float_4d(fieldname, field)
   CHARACTER(LEN=*)                        :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), TARGET :: field(:,:,:,:)
-  LOGICAL :: registered_only
+  LOGICAL                                 :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1739,13 +1716,10 @@ SUBROUTINE ftg_read_float_4d(fieldname, field)
   END IF
 END SUBROUTINE ftg_read_float_4d
 
-!=============================================================================
-!=============================================================================
-
 SUBROUTINE ftg_read_double_0d(fieldname, field)
-  CHARACTER(LEN=*)                          :: fieldname
+  CHARACTER(LEN=*)                         :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), TARGET :: field
-  LOGICAL :: registered_only
+  LOGICAL                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1758,7 +1732,7 @@ END SUBROUTINE ftg_read_double_0d
 SUBROUTINE ftg_read_double_1d(fieldname, field)
   CHARACTER(LEN=*)                         :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), TARGET :: field(:)
-  LOGICAL :: registered_only
+  LOGICAL                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1771,7 +1745,7 @@ END SUBROUTINE ftg_read_double_1d
 SUBROUTINE ftg_read_double_2d(fieldname, field)
   CHARACTER(LEN=*)                         :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), TARGET :: field(:,:)
-  LOGICAL :: registered_only
+  LOGICAL                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1784,7 +1758,7 @@ END SUBROUTINE ftg_read_double_2d
 SUBROUTINE ftg_read_double_3d(fieldname, field)
   CHARACTER(LEN=*)                         :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), TARGET :: field(:,:,:)
-  LOGICAL :: registered_only
+  LOGICAL                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1797,7 +1771,7 @@ END SUBROUTINE ftg_read_double_3d
 SUBROUTINE ftg_read_double_4d(fieldname, field)
   CHARACTER(LEN=*)                         :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), TARGET :: field(:,:,:,:)
-  LOGICAL :: registered_only
+  LOGICAL                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL fs_get_field_metainfo(serializer, fieldname, 'ftg:registered_only', registered_only)
@@ -1871,9 +1845,6 @@ SUBROUTINE ftg_allocate_pointer_logical_4d(fieldname, field)
 
 END SUBROUTINE ftg_allocate_pointer_logical_4d
 
-!=============================================================================
-!=============================================================================
-
 SUBROUTINE ftg_allocate_pointer_bool_1d(fieldname, field)
   CHARACTER(LEN=*)                           :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), POINTER :: field(:)
@@ -1919,6 +1890,7 @@ SUBROUTINE ftg_allocate_pointer_bool_3d(fieldname, field)
 
 END SUBROUTINE ftg_allocate_pointer_bool_3d
 
+
 SUBROUTINE ftg_allocate_pointer_bool_4d(fieldname, field)
   CHARACTER(LEN=*)                           :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), POINTER :: field(:,:,:,:)
@@ -1933,9 +1905,6 @@ SUBROUTINE ftg_allocate_pointer_bool_4d(fieldname, field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_bool_4d
-
-!=============================================================================
-!=============================================================================
 
 SUBROUTINE ftg_allocate_pointer_int_1d(fieldname, field)
   CHARACTER(LEN=*)              :: fieldname
@@ -1998,9 +1967,6 @@ SUBROUTINE ftg_allocate_pointer_int_4d(fieldname, field)
 
 END SUBROUTINE ftg_allocate_pointer_int_4d
 
-!=============================================================================
-!=============================================================================
-
 SUBROUTINE ftg_allocate_pointer_long_1d(fieldname, field)
   CHARACTER(LEN=*)                           :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), POINTER :: field(:)
@@ -2046,6 +2012,7 @@ SUBROUTINE ftg_allocate_pointer_long_3d(fieldname, field)
 
 END SUBROUTINE ftg_allocate_pointer_long_3d
 
+
 SUBROUTINE ftg_allocate_pointer_long_4d(fieldname, field)
   CHARACTER(LEN=*)                           :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), POINTER :: field(:,:,:,:)
@@ -2060,9 +2027,6 @@ SUBROUTINE ftg_allocate_pointer_long_4d(fieldname, field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_long_4d
-
-!=============================================================================
-!=============================================================================
 
 SUBROUTINE ftg_allocate_pointer_float_1d(fieldname, field)
   CHARACTER(LEN=*)                         :: fieldname
@@ -2125,9 +2089,6 @@ SUBROUTINE ftg_allocate_pointer_float_4d(fieldname, field)
 
 END SUBROUTINE ftg_allocate_pointer_float_4d
 
-!=============================================================================
-!=============================================================================
-
 SUBROUTINE ftg_allocate_pointer_double_1d(fieldname, field)
   CHARACTER(LEN=*)                          :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), POINTER :: field(:)
@@ -2172,6 +2133,7 @@ SUBROUTINE ftg_allocate_pointer_double_3d(fieldname, field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_double_3d
+
 
 SUBROUTINE ftg_allocate_pointer_double_4d(fieldname, field)
   CHARACTER(LEN=*)                          :: fieldname
@@ -2230,7 +2192,6 @@ SUBROUTINE ftg_allocate_allocatable_logical_3d(fieldname, field)
 
 END SUBROUTINE ftg_allocate_allocatable_logical_3d
 
-
 SUBROUTINE ftg_allocate_allocatable_logical_4d(fieldname, field)
   CHARACTER(LEN=*)                  :: fieldname
   LOGICAL, INTENT(OUT), ALLOCATABLE :: field(:,:,:,:)
@@ -2243,9 +2204,6 @@ SUBROUTINE ftg_allocate_allocatable_logical_4d(fieldname, field)
   END IF
 
 END SUBROUTINE ftg_allocate_allocatable_logical_4d
-
-!=============================================================================
-!=============================================================================
 
 SUBROUTINE ftg_allocate_allocatable_bool_1d(fieldname, field)
   CHARACTER(LEN=*)                               :: fieldname
@@ -2299,9 +2257,6 @@ SUBROUTINE ftg_allocate_allocatable_bool_4d(fieldname, field)
 
 END SUBROUTINE ftg_allocate_allocatable_bool_4d
 
-!=============================================================================
-!=============================================================================
-
 SUBROUTINE ftg_allocate_allocatable_int_1d(fieldname, field)
   CHARACTER(LEN=*)                  :: fieldname
   INTEGER, INTENT(OUT), ALLOCATABLE :: field(:)
@@ -2341,7 +2296,6 @@ SUBROUTINE ftg_allocate_allocatable_int_3d(fieldname, field)
 
 END SUBROUTINE ftg_allocate_allocatable_int_3d
 
-
 SUBROUTINE ftg_allocate_allocatable_int_4d(fieldname, field)
   CHARACTER(LEN=*)                  :: fieldname
   INTEGER, INTENT(OUT), ALLOCATABLE :: field(:,:,:,:)
@@ -2354,9 +2308,6 @@ SUBROUTINE ftg_allocate_allocatable_int_4d(fieldname, field)
   END IF
 
 END SUBROUTINE ftg_allocate_allocatable_int_4d
-
-!=============================================================================
-!=============================================================================
 
 SUBROUTINE ftg_allocate_allocatable_long_1d(fieldname, field)
   CHARACTER(LEN=*)                               :: fieldname
@@ -2410,9 +2361,6 @@ SUBROUTINE ftg_allocate_allocatable_long_4d(fieldname, field)
 
 END SUBROUTINE ftg_allocate_allocatable_long_4d
 
-!=============================================================================
-!=============================================================================
-
 SUBROUTINE ftg_allocate_allocatable_float_1d(fieldname, field)
   CHARACTER(LEN=*)                             :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), ALLOCATABLE :: field(:)
@@ -2452,7 +2400,6 @@ SUBROUTINE ftg_allocate_allocatable_float_3d(fieldname, field)
 
 END SUBROUTINE ftg_allocate_allocatable_float_3d
 
-
 SUBROUTINE ftg_allocate_allocatable_float_4d(fieldname, field)
   CHARACTER(LEN=*)                             :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), ALLOCATABLE :: field(:,:,:,:)
@@ -2465,9 +2412,6 @@ SUBROUTINE ftg_allocate_allocatable_float_4d(fieldname, field)
   END IF
 
 END SUBROUTINE ftg_allocate_allocatable_float_4d
-
-!=============================================================================
-!=============================================================================
 
 SUBROUTINE ftg_allocate_allocatable_double_1d(fieldname, field)
   CHARACTER(LEN=*)                              :: fieldname
@@ -2520,8 +2464,5 @@ SUBROUTINE ftg_allocate_allocatable_double_4d(fieldname, field)
   END IF
 
 END SUBROUTINE ftg_allocate_allocatable_double_4d
-
-!=============================================================================
-!=============================================================================
 
 END MODULE m_ser_ftg
