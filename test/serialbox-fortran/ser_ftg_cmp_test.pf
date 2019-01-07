@@ -30,7 +30,7 @@ CONTAINS
 
       CALL ftg_set_savepoint(savepoint_name)
       
-      ftg_cmp_quiet = .TRUE. ! Set to .FALSE. when output is needed
+      ftg_cmp_quiet = .FALSE. ! Set to .FALSE. when output is needed
       
       ftg_cmp_print_when_equal = .TRUE.
       ftg_cmp_count_different_bounds_as_failure = .FALSE.
